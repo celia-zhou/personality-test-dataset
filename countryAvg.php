@@ -1,30 +1,23 @@
 <?php
-// If the all the variables are set when the Submit button is clicked...
-if (isset($_POST['field_submit'])) {
-    // Refer to conn.php file and open a connection.
-    require_once("conn.php");
-    // Will get the value typed in the form text field and save into variable
-    $var_country = $_POST['field_country'];
-    // Save the query into variable called $query. Note that :country_name is a place holder
-    $query = "SELECT * FROM personality_test WHERE country = :country_name LIMIT 50";
 
 try
     {
-      // Create a prepared statement. Prepared statements are a way to eliminate SQL INJECTION.
-      $prepared_stmt = $dbo->prepare($query);
-      //bind the value saved in the variable $var_country to the place holder :country_name  
-      // Use PDO::PARAM_STR to sanitize user string.
-      $prepared_stmt->bindValue(':country_name', $var_country, PDO::PARAM_STR);
-      $prepared_stmt->execute();
-      // Fetch all the values based on query and save that to variable $result
-      $result = $prepared_stmt->fetchAll();
+        require_once("conn.php");
+        $query = "SELECT country,round(avg(EXT1),2) AS EXT,round(avg(AGR1),2) AS AGR,round(avg(CSN1),2) AS CSN,round(avg(OPN1),2) AS OPN,round(avg(EST1),2) AS EST FROM personality_test GROUP BY country";
+        // Create a prepared statement. Prepared statements are a way to eliminate SQL INJECTION.
+        $prepared_stmt = $dbo->prepare($query);
+        
+        // Use PDO::PARAM_STR to sanitize user string.
+        $prepared_stmt->execute();
+        // Fetch all the values based on query and save that to variable $result
+        $result = $prepared_stmt->fetchAll();
 
     }
     catch (PDOException $ex)
     { // Error in database processing.
       echo $sql . "<br>" . $error->getMessage(); // HTTP 500 - Internal Server Error
     }
-}
+
 ?>
 
 <html>
@@ -63,27 +56,12 @@ try
       </div>
     </div>
 	</nav>
-    
-  <div class = "content">
-    <h1> Search Data by Country</h1>
-    <!-- This is the start of the form. This form has one text field and one button.
-      See the project.css file to note how form is stylized.-->
-    <form method="post">
 
-      <label for="id_director">Country</label>
-      <!-- The input type is a text field. Note the name and id. The name attribute
-        is referred above on line 7. $var_country = $_POST['field_country']; id attribute is referred in label tag above on line 52-->
-      <input type="text" name="field_country" id = "id_director">
-      <!-- The input type is a submit button. Note the name and value. The value attribute decides what will be dispalyed on Button. In this case the button shows Submit.
-      The name attribute is referred  on line 3 and line 61. -->
-      <input type="submit" name="field_submit" value="Submit">
-    </form>
-  </div>
 
     
     
     <?php
-      if (isset($_POST['field_submit'])) {
+      
         
         // If the query executed (result is true) and the row count returned from the query is greater than 0 then...
         if ($result && $prepared_stmt->rowCount() > 0) { ?>
@@ -91,7 +69,7 @@ try
           <div class="table-container">
             <div class = "table-wrapper">
               <!-- first show the header RESULT -->
-              <h2>Results</h2>
+              <h2>Average Traits For Each Country</h2>
               <!-- THen create a table like structure. See the project.css how table is stylized. -->
               <table>
                 <!-- Create the first row of table as table head (thead). -->
@@ -99,8 +77,6 @@ try
                    <!-- The top row is table head with four columns named -- ID, Title ... -->
                   <tr>
                     <th class="data-th">Country</th>
-                    <th class="data-th">Latitude</th>
-                    <th class="data-th">Longitude</th>
                     <th class="data-th">Extraversion</th>
                     <th class="data-th">Agreeableness</th>
                     <th class="data-th">Conscientiousness</th>
@@ -114,13 +90,11 @@ try
                   <?php foreach ($result as $row) { ?>
                     <tr>
                       <td class="data-td"><?php echo $row["country"]; ?></td>
-                      <td class="data-td"><?php echo $row["lat_appx_lots_of_err"]; ?></td>
-                      <td class="data-td"><?php echo $row["long_appx_lots_of_err"]; ?></td>
-                      <td class="data-td"><?php echo $row["EXT1"]; ?></td>
-                      <td class="data-td"><?php echo $row["AGR1"]; ?></td>
-                      <td class="data-td"><?php echo $row["CSN1"]; ?></td>
-                      <td class="data-td"><?php echo $row["OPN1"]; ?></td>
-                      <td class="data-td"><?php echo $row["EST1"]; ?></td>
+                      <td class="data-td"><?php echo $row["EXT"]; ?></td>
+                      <td class="data-td"><?php echo $row["AGR"]; ?></td>
+                      <td class="data-td"><?php echo $row["CSN"]; ?></td>
+                      <td class="data-td"><?php echo $row["OPN"]; ?></td>
+                      <td class="data-td"><?php echo $row["EST"]; ?></td>
                     <!-- End first row. Note this will repeat for each row in the $result variable-->
                     </tr>
                     
@@ -138,9 +112,9 @@ try
   
         <?php } else { ?>
           <!-- IF query execution resulted in error display the following message-->
-          <h3>Sorry, no results found for country <?php echo $_POST['field_country']; ?>. </h3>
+          <h3>Sorry, no results found. </h3>
         <?php }
-    } ?>
+     ?>
 
 
     
