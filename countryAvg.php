@@ -3,7 +3,8 @@
 try
     {
         require_once("conn.php");
-        $query = "SELECT country,round(avg(EXT1),2) AS EXT,round(avg(AGR1),2) AS AGR,round(avg(CSN1),2) AS CSN,round(avg(OPN1),2) AS OPN,round(avg(EST1),2) AS EST FROM personality_test GROUP BY country";
+        // This directly uses the view to return the result
+        $query = "SELECT * FROM allcountries;";
         // Create a prepared statement. Prepared statements are a way to eliminate SQL INJECTION.
         $prepared_stmt = $dbo->prepare($query);
         
@@ -29,6 +30,7 @@ try
   </head> 
 <!-- Everything inside the BODY tags are visible on page.-->
   <body>
+    <!-- This is the navigation bar, which is used to move between the pages -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="index.html">5 Personality Test</a>
@@ -38,28 +40,24 @@ try
       <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+        <a class="nav-link" aria-current="page" href="index.html">Home</a>
         </li>
         <li class="nav-item">
-        <a class="nav-link" href="getMovie.php">Search by Country</a>
+        <a class="nav-link" href="searchCountry.php">Search by Country</a>
         </li>
         <li class="nav-item">
-        <a class="nav-link" href="countryAvg.php">View Country Averages</a>
+        <a class="nav-link active" href="countryAvg.php">View Country Averages</a>
         </li>
         <li class="nav-item">
         <a class="nav-link" href="addData.php">Take Questionnaire</a>
         </li>
         <li class="nav-item">
-        <a class="nav-link disabled">Delete</a>
-        </li>
+					<a class="nav-link" href="editData.php">Update/Delete Data</a>
+				</li>
       </ul>
       </div>
     </div>
 	</nav>
-
-
-    
-    
     <?php
       
         
@@ -90,15 +88,13 @@ try
                   <?php foreach ($result as $row) { ?>
                     <tr>
                       <td class="data-td"><?php echo $row["country"]; ?></td>
-                      <td class="data-td"><?php echo $row["EXT"]; ?></td>
-                      <td class="data-td"><?php echo $row["AGR"]; ?></td>
-                      <td class="data-td"><?php echo $row["CSN"]; ?></td>
-                      <td class="data-td"><?php echo $row["OPN"]; ?></td>
-                      <td class="data-td"><?php echo $row["EST"]; ?></td>
+                      <td class="data-td"><?php echo $row["extraversion"]; ?></td>
+                      <td class="data-td"><?php echo $row["agreeableness"]; ?></td>
+                      <td class="data-td"><?php echo $row["conscientiousness"]; ?></td>
+                      <td class="data-td"><?php echo $row["openness"]; ?></td>
+                      <td class="data-td"><?php echo $row["neuroticism"]; ?></td>
                     <!-- End first row. Note this will repeat for each row in the $result variable-->
                     </tr>
-                    
-                    
                   <?php } ?>
                   <!-- End table body -->
                 </tbody>
